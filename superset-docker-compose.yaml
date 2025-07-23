@@ -1,0 +1,37 @@
+version: '3'
+services:
+  superset:
+    image: apache/superset:latest
+    container_name: superset
+    ports:
+      - "8088:8088"
+    environment:
+      - SUPERSET_SECRET_KEY=f1cF2yWFGwnzTjePDxYrApRCIkWtkcRkQj7mrPVSSJQI/QZjflH2lJVR
+      - ADMIN_USERNAME=admin
+      - ADMIN_EMAIL=admin@superset.com
+      - ADMIN_PASSWORD=admin123
+    volumes:
+      - ./superset:/app/superset_home
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  superset-init:
+    image: apache/superset:latest
+    container_name: superset-init
+    depends_on:
+      - superset
+    volumes:
+      - ./superset:/app/superset_home
+    environment:
+      - SUPERSET_SECRET_KEY=f1cF2yWFGwnzTjePDxYrApRCIkWtkcRkQj7mrPVSSJQI/QZjflH2lJVR
+      - ADMIN_USERNAME=admin
+      - ADMIN_EMAIL=admin@superset.com
+      - ADMIN_PASSWORD=admin123
+    command: >
+      sh -c "superset db upgrade &&
+             superset fab create-admin --username $$ADMIN_USERNAME --firstname Superset --lastname Admin --email $$ADMIN_EMAIL --password $$ADMIN_PASSWORD &&
+             superset init" 

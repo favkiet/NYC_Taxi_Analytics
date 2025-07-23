@@ -1,0 +1,13 @@
+**/__pycache__/
+
+/data/*
+/jars/*
+**/logs/
+test.py
+/airflow/logs/*
+notebooks
+jars
+.venv
+.env
+.DS_Store
+README.md
